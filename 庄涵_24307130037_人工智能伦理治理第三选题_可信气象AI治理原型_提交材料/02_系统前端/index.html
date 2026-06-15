@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>可信气象AI伦理治理系统</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">FY4B-AGRI CNN-Transformer Governance Layer</p>
+      <h1>可信气象AI伦理治理系统</h1>
+      <p class="header-copy">把亮温预测黑盒模型转化为可解释、可复核、可追责的辅助决策系统, 重点治理黑盒效应、自动化偏见和错误预测对人身安全的影响。</p>
+    </div>
+    <div class="header-status" aria-label="系统状态">
+      <span>模型用途: 辅助分析</span>
+      <span>高风险: 人工复核</span>
+      <span>禁止: 自动预警</span>
+    </div>
+  </header>
+
+  <nav class="tabbar" aria-label="系统模块">
+    <button class="tab active" data-view="dashboard">总览</button>
+    <button class="tab" data-view="risk">风险计算</button>
+    <button class="tab" data-view="blackbox">黑盒治理</button>
+    <button class="tab" data-view="safety">安全影响</button>
+    <button class="tab" data-view="governance">治理流程</button>
+  </nav>
+
+  <main>
+    <section class="view active" id="dashboard">
+      <div class="section-head">
+        <div>
+          <h2>系统总览</h2>
+          <p>本页展示模型指标、风险等级和伦理治理目标。系统不是替代预报员, 而是为气象AI预测提供透明性和责任边界。</p>
+        </div>
+        <a class="link-button" href="../01_项目报告/庄涵_24307130037_可信气象AI治理原型_项目报告.docx">打开项目报告</a>
+      </div>
+
+      <div class="metric-grid" id="metricGrid"></div>
+
+      <div class="two-column">
+        <article class="plain-panel">
+          <h3>本系统解决的问题</h3>
+          <ul class="check-list">
+            <li>黑盒效应: 使用者只看到预测图, 不知道模型数据边界、误差来源和不可靠区域。</li>
+            <li>安全风险: 错误预测可能影响强对流识别、预警研判和应急响应准备。</li>
+            <li>自动化偏见: 使用者可能把模型输出误当成确定结论, 忽视人工复核。</li>
+            <li>责任模糊: 若没有审计记录和责任边界, 错误结果难以复盘。</li>
+          </ul>
+        </article>
+        <article class="plain-panel">
+          <h3>伦理设计原则</h3>
+          <div class="principle-list">
+            <span>透明性</span>
+            <span>安全可靠</span>
+            <span>人类监督</span>
+            <span>可追溯</span>
+            <span>比例治理</span>
+            <span>负责任创新</span>
+          </div>
+          <p>系统把模型误差分析转化为治理动作: 风险标签、复核门槛、禁止自动预警、用户反馈和审计记录。</p>
+        </article>
+      </div>
+
+      <div class="evidence-grid">
+        <figure>
+          <img src="assets/channel_metrics_bar.png" alt="各通道误差与拟合指标">
+          <figcaption>各通道指标: CH12/CH13 的误差明显更高, 需要更强风险提示。</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/error_by_bt_bin.png" alt="不同亮温区间误差">
+          <figcaption>低亮温区间误差更高, 冷云顶和强对流相关区域必须人工复核。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="view" id="risk">
+      <div class="section-head">
+        <div>
+          <h2>交互式风险计算器</h2>
+          <p>输入一次预测结果的使用场景, 系统会给出伦理风险等级、原因和治理动作。这个模块可用于用户测试和问卷前置任务。</p>
+        </div>
+        <button class="icon-button" id="resetRisk" title="重置风险参数" aria-label="重置风险参数">↺</button>
+      </div>
+
+      <div class="risk-workbench">
+        <form class="control-surface" id="riskForm">
+          <label>
+            <span>预测通道</span>
+            <select id="channelSelect">
+              <option value="CH09">CH09 高层水汽</option>
+              <option value="CH10">CH10 中层水汽</option>
+              <option value="CH12">CH12 长波红外</option>
+              <option value="CH13">CH13 红外窗口</option>
+            </select>
+          </label>
+
+          <label>
+            <span>目标区域最低亮温: <strong id="btValue">210 K</strong></span>
+            <input id="brightnessTemp" type="range" min="150" max="310" value="210" step="5">
+          </label>
+
+          <fieldset>
+            <legend>空间结构</legend>
+            <div class="segmented">
+              <label><input type="radio" name="gradient" value="smooth" checked><span>平滑</span></label>
+              <label><input type="radio" name="gradient" value="edge"><span>云边界</span></label>
+              <label><input type="radio" name="gradient" value="rapid"><span>快速发展</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>使用场景</legend>
+            <div class="segmented">
+              <label><input type="radio" name="context" value="research" checked><span>科研分析</span></label>
+              <label><input type="radio" name="context" value="assist"><span>业务辅助</span></label>
+              <label><input type="radio" name="context" value="warning"><span>预警研判</span></label>
+            </div>
+          </fieldset>
+
+          <label class="toggle-row">
+            <input id="oodToggle" type="checkbox">
+            <span>训练分布外: 跨季节、跨区域或极端天气过程</span>
+          </label>
+          <label class="toggle-row">
+            <input id="qualityToggle" type="checkbox">
+            <span>输入数据存在缺测、异常或质量标识不完整</span>
+          </label>
+        </form>
+
+        <aside class="risk-output" aria-live="polite">
+          <div class="risk-score" id="riskScore">0</div>
+          <div>
+            <h3 id="riskLevel">低风险</h3>
+            <p id="riskSummary">可作为短时趋势参考, 保留模型版本和数据来源记录。</p>
+          </div>
+          <div class="action-block">
+            <h4>治理动作</h4>
+            <ul id="riskActions"></ul>
+          </div>
+          <div class="audit-block">
+            <h4>审计记录字段</h4>
+            <p id="auditText"></p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="blackbox">
+      <div class="section-head">
+        <div>
+          <h2>黑盒效应治理</h2>
+          <p>深度模型的内部表示难以直接解释。本系统不假装完全打开黑盒, 而是用可审计的外部透明性降低误用风险。</p>
+        </div>
+      </div>
+
+      <div class="blackbox-layout">
+        <div class="blackbox-chain">
+          <div>输入数据<br><small>来源、时间、通道</small></div>
+          <div>黑盒模型<br><small>CNN-Transformer</small></div>
+          <div>预测输出<br><small>亮温图和误差图</small></div>
+          <div>治理外层<br><small>风险、复核、审计</small></div>
+        </div>
+        <table class="governance-table">
+          <thead>
+            <tr><th>黑盒问题</th><th>伦理风险</th><th>系统回应</th></tr>
+          </thead>
+          <tbody id="blackboxRows"></tbody>
+        </table>
+      </div>
+
+      <div class="evidence-grid">
+        <figure>
+          <img src="assets/observed_vs_predicted_scatter.png" alt="真实亮温与预测亮温散点图">
+          <figcaption>散点图用于识别均值回归和极端区间偏差。</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/mean_absolute_error_maps.png" alt="空间平均绝对误差分布">
+          <figcaption>空间误差图用于提示云边界和局地结构的不确定性。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="view" id="safety">
+      <div class="section-head">
+        <div>
+          <h2>错误预测与人身安全影响</h2>
+          <p>气象AI的伦理重点在于公共安全后果。这里把模型错误转化为可讨论的安全场景, 用于论文中的风险分析。</p>
+        </div>
+      </div>
+
+      <div class="scenario-grid" id="scenarioGrid"></div>
+
+      <article class="plain-panel">
+        <h3>安全边界声明</h3>
+        <p>系统输出不得单独作为灾害预警、停课停工、交通管制或应急响应依据。凡涉及公众生命健康和重大财产安全的场景, 必须由预报员结合雷达、地面观测、数值预报和业务规范进行复核。</p>
+      </article>
+    </section>
+
+    <section class="view" id="governance">
+      <div class="section-head">
+        <div>
+          <h2>治理流程与责任分工</h2>
+          <p>系统采用分级治理: 低风险可作趋势参考, 中风险需要交叉验证, 高风险必须人工复核并记录责任链。</p>
+        </div>
+      </div>
+
+      <div class="workflow" id="workflow"></div>
+
+      <table class="governance-table">
+        <thead>
+          <tr><th>治理对象</th><th>责任主体</th><th>最低要求</th><th>证据材料</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>数据来源</td><td>数据处理者</td><td>记录来源、时间、通道、质量控制规则</td><td>数据卡、预处理日志</td></tr>
+          <tr><td>模型输出</td><td>模型开发者</td><td>公开指标、误差区间、适用边界</td><td>模型卡、指标表、误差图</td></tr>
+          <tr><td>高风险判断</td><td>预报复核者</td><td>结合多源观测, 禁止模型自动触发预警</td><td>复核记录、风险登记表</td></tr>
+          <tr><td>系统改进</td><td>项目维护者</td><td>收集反馈, 更新阈值和说明文档</td><td>问卷数据、版本记录</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
